@@ -128,7 +128,9 @@ func RPCInvokeHandlerWithOptions(ch grpc.ClientConnInterface, descs []*desc.Meth
 					Options:    &options,
 				}
 				call := func(ctx context.Context, req *RPCRequest) (*RPCResult, error) {
-					return invokeRPC(ctx, method, ch, descSource, r.Header, r.Body, &options)
+					rawBody, _ := io.ReadAll(req.Body)
+					println("body", string(rawBody))
+					return invokeRPC(ctx, method, ch, descSource, r.Header, io.NopCloser(bytes.NewBuffer(rawBody)), &options)
 				}
 				for i := len(options.Middlewares) - 1; i > 0; i-- {
 					mw := options.Middlewares[i]
